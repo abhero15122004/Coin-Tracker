@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Sign Up</title>
+    <meta name="description" content="A beautiful, responsive signup form built with HTML, CSS, and JS.">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Welcome to Our Platform</h1>
+        <p>Join us today to get started with amazing features.</p>
+    </header>
+    
+    <main>
+        <div class="form-container">
+            <h2>Create an Account</h2>
+            <form id="signup-form" novalidate>
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="john.doe@example.com">
+                    <span class="error-message" id="email-error">Please enter a valid email address.</span>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                    <span class="error-message" id="password-error">Password must be at least 8 characters, with 1 uppercase, 1 lowercase, and 1 number.</span>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required placeholder="Confirm your password">
+                    <span class="error-message" id="confirm-password-error">Passwords do not match.</span>
+                </div>
+
+                <!-- Date of Birth Field -->
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" id="dob" name="dob" required>
+                    <span class="error-message" id="dob-error">Please select your date of birth.</span>
+                </div>
+
+                <!-- Gender (Radio Buttons) -->
+                <div class="form-group">
+                    <label>Gender</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="male" required>
+                            Male
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="female">
+                            Female
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="other">
+                            Other
+                        </label>
+                    </div>
+                    <span class="error-message" id="gender-error">Please select a gender.</span>
+                </div>
+
+                <!-- Terms (Checkbox) -->
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        I agree to the Terms and Conditions
+                    </label>
+                    <span class="error-message" id="terms-error">You must agree to the terms and conditions.</span>
+                </div>
+
+                <button type="submit" id="submit-btn">Sign Up</button>
+            </form>
+            <div id="success-message" class="success-message hidden">
+                Registration successful! Welcome aboard.
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Our Platform. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
