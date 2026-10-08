@@ -1,104 +1,151 @@
-let cryptoData = [];
-const apiEndpoint = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false";
-
 document.addEventListener("DOMContentLoaded", () => {
-  // Using async/await as the primary fetch mechanism as requested by instructions (both are implemented).
-  fetchDataWithAsyncAwait();
-  // Alternatively, you can call fetchDataWithThen();
-
-  // Search functionality
-  const searchInput = document.getElementById("search-input");
-  searchInput.addEventListener("input", (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    const filteredData = cryptoData.filter(coin => 
-      coin.name.toLowerCase().includes(searchTerm) || 
-      coin.symbol.toLowerCase().includes(searchTerm)
-    );
-    renderTable(filteredData);
-  });
-
-  // Sort by Market Cap
-  const sortMktCapBtn = document.getElementById("sort-mkt-cap");
-  sortMktCapBtn.addEventListener("click", () => {
-    // Sorting in descending order as per typical market cap displays
-    const sortedData = [...cryptoData].sort((a, b) => b.market_cap - a.market_cap);
-    renderTable(sortedData);
-  });
-
-  // Sort by Percentage Change
-  const sortPercentageBtn = document.getElementById("sort-percentage");
-  sortPercentageBtn.addEventListener("click", () => {
-    // Sorting in descending order
-    const sortedData = [...cryptoData].sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h);
-    renderTable(sortedData);
+  const startBtn = document.getElementById("start-btn");
+  
+  startBtn.addEventListener("click", () => {
+    startBtn.disabled = true;
+    document.getElementById("event-logs").innerHTML = ''; // Clear logs
+    OpeningCeremony(Race100M);
   });
 });
 
-// Part 1 & 5: Implementation of async await
-async function fetchDataWithAsyncAwait() {
-  try {
-    const response = await fetch(apiEndpoint);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    cryptoData = data;
-    renderTable(cryptoData);
-  } catch (error) {
-    console.error("Error fetching data using async/await:", error);
-  }
+// Helper function to log to UI and Console
+function logEvent(message, type = "") {
+  console.log(message);
+  
+  const logsContainer = document.getElementById("event-logs");
+  const logDiv = document.createElement("div");
+  logDiv.className = `log-entry ${type}`;
+  logDiv.textContent = `> ${message}`;
+  
+  logsContainer.appendChild(logDiv);
+  logsContainer.scrollTop = logsContainer.scrollHeight;
 }
 
-// Part 1 & 5: Implementation of .then
-function fetchDataWithThen() {
-  fetch(apiEndpoint)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      cryptoData = data;
-      renderTable(cryptoData);
-    })
-    .catch(error => {
-      console.error("Error fetching data using .then:", error);
-    });
-}
-
-// Part 3 & 4: Render Data
-function renderTable(data) {
-  const tableBody = document.getElementById("coin-table-body");
-  tableBody.innerHTML = "";
-
-  data.forEach(coin => {
-    const row = document.createElement("tr");
-
-    // Format numbers
-    const currentPrice = `$${coin.current_price.toLocaleString()}`;
-    const totalVolume = `$${coin.total_volume.toLocaleString()}`;
-    const marketCap = `Mkt Cap : $${coin.market_cap.toLocaleString()}`;
+// 1. Opening Ceremony
+function OpeningCeremony(callbackFnc) {
+  logEvent("🏆 Welcome to the Annual Sports Day! Let the games begin! 🏆", "highlight");
+  
+  // Initialize score object
+  const score = { red: 0, blue: 0, green: 0, yellow: 0 };
+  
+  // The requirements say "logs start message every second" but realistically 
+  // it usually means log a message, wait a second, then call the next.
+  setTimeout(() => {
+    logEvent("Opening ceremony concluded. Initial scores:");
+    logEvent(JSON.stringify(score), "score");
+    logEvent("--------------------------------------------------", "system");
     
-    // Format percentage and determine color
-    const percentageChange = coin.price_change_percentage_24h.toFixed(2);
-    const percentageClass = percentageChange >= 0 ? "percentage-green" : "percentage-red";
-    const percentageText = `${percentageChange}%`;
+    // Call next function
+    callbackFnc(score, LongJump);
+  }, 1000);
+}
 
-    row.innerHTML = `
-      <td>
-        <div class="coin-info">
-          <img src="${coin.image}" alt="${coin.name}" class="coin-logo">
-          <span>${coin.name}</span>
-        </div>
-      </td>
-      <td class="coin-symbol">${coin.symbol}</td>
-      <td>${currentPrice}</td>
-      <td>${totalVolume}</td>
-      <td class="${percentageClass}">${percentageText}</td>
-      <td>${marketCap}</td>
-    `;
+// 2. Race 100M
+function Race100M(score, callbackFnc) {
+  logEvent("🏃 100M Race is starting...", "highlight");
+  
+  setTimeout(() => {
+    // Generate random times between 10 to 15 seconds
+    const times = {
+      red: Math.floor(Math.random() * 6) + 10,
+      blue: Math.floor(Math.random() * 6) + 10,
+      green: Math.floor(Math.random() * 6) + 10,
+      yellow: Math.floor(Math.random() * 6) + 10,
+    };
+    
+    logEvent(`Race times: ${JSON.stringify(times)}`);
+    
+    // Find smallest and second smallest times
+    const sortedColors = Object.keys(times).sort((a, b) => times[a] - times[b]);
+    const first = sortedColors[0];
+    const second = sortedColors[1];
+    
+    logEvent(`${first.toUpperCase()} wins 1st place! (50 pts)`);
+    logEvent(`${second.toUpperCase()} wins 2nd place! (25 pts)`);
+    
+    // Update scores
+    score[first] += 50;
+    score[second] += 25;
+    
+    logEvent("Scores after 100M Race:", "highlight");
+    logEvent(JSON.stringify(score), "score");
+    logEvent("--------------------------------------------------", "system");
+    
+    // Call next function
+    callbackFnc(score, HighJump);
+  }, 3000);
+}
 
-    tableBody.appendChild(row);
-  });
+// 3. Long Jump
+function LongJump(score, callbackFnc) {
+  logEvent("🦘 Long Jump event is starting...", "highlight");
+  
+  setTimeout(() => {
+    // Randomly select a color
+    const colors = ["red", "blue", "green", "yellow"];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    
+    logEvent(`The random winner for Long Jump is: ${randomColor.toUpperCase()}! (150 pts)`);
+    
+    // Update score
+    score[randomColor] += 150;
+    
+    logEvent("Scores after Long Jump:", "highlight");
+    logEvent(JSON.stringify(score), "score");
+    logEvent("--------------------------------------------------", "system");
+    
+    // Call next function
+    callbackFnc(score, AwardCeremony);
+  }, 2000);
+}
+
+// 4. High Jump
+function HighJump(score, callbackFnc) {
+  logEvent("🤸 High Jump event is starting...", "highlight");
+  
+  // We don't necessarily need a setTimeout here if we use a prompt,
+  // but to keep the flow smooth, we can prompt immediately.
+  const userInput = prompt("High Jump Event!\nWhat colour secured the highest jump? (red/blue/green/yellow)");
+  
+  if (userInput) {
+    const colorInput = userInput.trim().toLowerCase();
+    
+    if (["red", "blue", "green", "yellow"].includes(colorInput)) {
+      logEvent(`${colorInput.toUpperCase()} wins the High Jump! (100 pts)`);
+      score[colorInput] += 100;
+    } else {
+      logEvent(`Invalid color entered ("${colorInput}"). Event cancelled, no points awarded.`);
+    }
+  } else {
+    logEvent("No input provided. Event cancelled, no points awarded.");
+  }
+  
+  logEvent("Scores after High Jump:", "highlight");
+  logEvent(JSON.stringify(score), "score");
+  logEvent("--------------------------------------------------", "system");
+  
+  // Call next function
+  callbackFnc(score);
+}
+
+// 5. Award Ceremony
+function AwardCeremony(score) {
+  logEvent("🎉 Award Ceremony is starting! 🎉", "highlight");
+  
+  // Sort scores to find 1st, 2nd, 3rd
+  const sortedScores = Object.entries(score).sort((a, b) => b[1] - a[1]);
+  
+  logEvent("FINAL STANDINGS:", "highlight");
+  logEvent(`🥇 1st Place: ${sortedScores[0][0].toUpperCase()} with ${sortedScores[0][1]} points!`, "score");
+  logEvent(`🥈 2nd Place: ${sortedScores[1][0].toUpperCase()} with ${sortedScores[1][1]} points!`, "score");
+  logEvent(`🥉 3rd Place: ${sortedScores[2][0].toUpperCase()} with ${sortedScores[2][1]} points!`, "score");
+  
+  if (sortedScores[3]) {
+      logEvent(`   4th Place: ${sortedScores[3][0].toUpperCase()} with ${sortedScores[3][1]} points.`);
+  }
+
+  logEvent("Thank you for attending the Annual Sports Day!", "highlight");
+  
+  // Re-enable start button
+  document.getElementById("start-btn").disabled = false;
 }

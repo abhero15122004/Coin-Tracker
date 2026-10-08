@@ -3,27 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crypto Tracker</title>
+  <title>Sports Day Simulation</title>
   <link rel="stylesheet" href="index.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
   <div class="container">
-    <div class="toolbar">
-      <input type="text" id="search-input" placeholder="Search By Name or Symbol">
-      <div class="sort-buttons">
-        <button id="sort-mkt-cap">Sort By Mkt Cap</button>
-        <button id="sort-percentage">Sort by percentage</button>
-      </div>
+    <header>
+      <h1>🏅 Annual Sports Day 🏅</h1>
+      <p>Click the button below to simulate the sequence of events.</p>
+    </header>
+
+    <div class="controls">
+      <button id="start-btn">Start Event</button>
     </div>
 
-    <div class="table-container">
-      <table id="coin-table">
-        <tbody id="coin-table-body">
-          <!-- Rows will be injected here via JavaScript -->
-        </tbody>
-      </table>
+    <div class="terminal-wrapper">
+      <div class="terminal-header">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <span class="title">Live Event Ticker</span>
+      </div>
+      <div id="event-logs" class="terminal-body">
+        <div class="log-entry system">Waiting for event to start...</div>
+      </div>
     </div>
   </div>
 
