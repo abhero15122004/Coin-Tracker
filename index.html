@@ -1,38 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Beagle Dog</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Information App</title>
+  <link rel="stylesheet" href="index.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <!-- Top Section -->
-        <section class="top-section">
-            <h1>The Beagle</h1>
-            <p>The Beagle is a breed of small scent hound, similar in appearance to the much larger foxhound. They are known for their great sense of smell and their friendly, curious nature.</p>
-            <a href="https://en.wikipedia.org/wiki/Beagle" target="_blank" class="link-btn">Read More</a>
-        </section>
 
-        <!-- Image Section -->
-        <section class="image-section">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Beagle_600.jpg" alt="A lovely Beagle dog">
-            <br>
-            <a href="https://www.google.com/search?tbm=isch&q=beagle" target="_blank" class="link-btn">More Images</a>
-        </section>
-
-        <!-- Trivia Section -->
-        <section class="trivia-section">
-            <h2>Beagle Trivia</h2>
-            <ol>
-                <li><strong>Excellent Sense of Smell:</strong> Beagles have around 220 million scent receptors.</li>
-                <li><strong>Vocal Dogs:</strong> The word "Beagle" may come from the French word "begueule," meaning "open throat."</li>
-                <li><strong>Famous Pop Culture Icons:</strong> The world's most famous Beagle is arguably Snoopy from the Peanuts comic strip.</li>
-                <li><strong>Presidential Pets:</strong> U.S. President Lyndon B. Johnson had three Beagles named Him, Her, and Edgar.</li>
-            </ol>
-        </section>
+  <!-- Landing Page -->
+  <div id="landing-page" class="view">
+    <div class="landing-left">
+      <div class="landing-content">
+        <h1>Post Office Application.</h1>
+        <p>This Application Allows you to extract information about the nearest Post Offices, based on your location.</p>
+        <div class="illustration-placeholder">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="80" fill="#5a5c88" opacity="0.8"/>
+            <!-- Simple placeholder shapes for illustration -->
+            <rect x="70" y="80" width="60" height="80" fill="#2d2d2d" rx="5"/>
+            <circle cx="100" cy="65" r="15" fill="#e0e0e0"/>
+          </svg>
+        </div>
+      </div>
     </div>
+    <div class="landing-right">
+      <div class="landing-action">
+        <h2>Your Current IP Address is <span id="landing-ip">Loading...</span></h2>
+        <button id="get-started-btn" disabled>Get Started</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="view hidden">
+    
+    <!-- Top Details Section -->
+    <section class="details-section">
+      <h3>IP Address : <span id="dash-ip">...</span></h3>
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="label">Lat:</span>
+          <span class="value" id="val-lat">...</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">City:</span>
+          <span class="value" id="val-city">...</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">Organisation:</span>
+          <span class="value" id="val-org">...</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">Long:</span>
+          <span class="value" id="val-lon">...</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">Region:</span>
+          <span class="value" id="val-region">...</span>
+        </div>
+        <div class="detail-item">
+          <span class="label">Hostname:</span>
+          <span class="value" id="val-host">...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="map-section">
+      <h2>Your Current Location</h2>
+      <iframe id="map-iframe" width="100%" height="400" frameborder="0" style="border:0" allowfullscreen></iframe>
+    </section>
+
+    <!-- More Info Section -->
+    <section class="more-info-section">
+      <h2>More Information About You</h2>
+      <p>Time Zone: <span id="val-timezone">...</span></p>
+      <p>Date And Time: <span id="val-datetime">...</span></p>
+      <p>Pincode: <span id="val-pincode">...</span></p>
+      <p>Message: <span id="val-message">...</span></p>
+    </section>
+
+    <!-- Post Offices Section -->
+    <section class="post-offices-section">
+      <h2>Post Offices Near You</h2>
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search By Name...">
+      </div>
+      
+      <div id="post-office-grid" class="post-office-grid">
+        <!-- Cards will be injected here by JS -->
+      </div>
+    </section>
+
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
