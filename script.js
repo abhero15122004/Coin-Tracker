@@ -1,112 +1,98 @@
-let userIP = '';
-let postOfficesData = [];
+const API_KEY = "LCc8yC3V8qH2zpKDNlqx2G9jEKIw2kwPOhuNCX2a";
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Step 1: Get IP Address on load
-  fetch('https://api.ipify.org?format=json')
-    .then(response => response.json())
-    .then(data => {
-      userIP = data.ip;
-      document.getElementById('landing-ip').textContent = userIP;
-      const getStartedBtn = document.getElementById('get-started-btn');
-      getStartedBtn.disabled = false;
-    })
-    .catch(error => {
-      console.error('Error fetching IP:', error);
-      document.getElementById('landing-ip').textContent = 'Error fetching IP';
-    });
+document.addEventListener("DOMContentLoaded", () => {
+  getCurrentImageOfTheDay();
+  addSearchToHistory();
 
-  // Step 2: Button Click Event
-  document.getElementById('get-started-btn').addEventListener('click', () => {
-    document.getElementById('landing-page').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-    
-    document.getElementById('dash-ip').textContent = userIP;
-    
-    fetchUserInfo();
-  });
-
-  // Search Filter
-  document.getElementById('search-input').addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    const filteredOffices = postOfficesData.filter(office => {
-      const name = office.Name.toLowerCase();
-      const branchType = office.BranchType.toLowerCase();
-      return name.includes(searchTerm) || branchType.includes(searchTerm);
-    });
-    renderPostOffices(filteredOffices);
+  document.getElementById("search-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const dateInput = document.getElementById("search-input").value;
+    if (dateInput) {
+      getImageOfTheDay(dateInput);
+    }
   });
 });
 
-function fetchUserInfo() {
-  // Use ipapi.co to get info based on IP
-  fetch(`https://ipapi.co/${userIP}/json/`)
-    .then(response => response.json())
-    .then(data => {
-      // Step 3: Populate Top Details
-      document.getElementById('val-lat').textContent = data.latitude;
-      document.getElementById('val-lon').textContent = data.longitude;
-      document.getElementById('val-city').textContent = data.city;
-      document.getElementById('val-region').textContent = data.region;
-      document.getElementById('val-org').textContent = data.org;
-      document.getElementById('val-host').textContent = data.asn || "N/A"; // fallback for hostname if not present
-
-      // Step 4: Display Map
-      const mapIframe = document.getElementById('map-iframe');
-      mapIframe.src = `https://maps.google.com/maps?q=${data.latitude},${data.longitude}&z=15&output=embed`;
-
-      // Step 5: Display Time
-      const timezone = data.timezone;
-      document.getElementById('val-timezone').textContent = timezone;
-      
-      const currentTime = new Date().toLocaleString("en-US", { timeZone: timezone });
-      document.getElementById('val-datetime').textContent = currentTime;
-      
-      document.getElementById('val-pincode').textContent = data.postal;
-
-      // Step 6 & 7: Fetch Post Offices
-      fetchPostOffices(data.postal);
-    })
-    .catch(error => {
-      console.error('Error fetching user info:', error);
-    });
+function getCurrentImageOfTheDay() {
+  const currentDate = new Date().toISOString().split("T")[0];
+  fetchAPOD(currentDate);
 }
 
-function fetchPostOffices(pincode) {
-  fetch(`https://api.postalpincode.in/pincode/${pincode}`)
-    .then(response => response.json())
+function getImageOfTheDay(date) {
+  fetchAPOD(date, true);
+}
+
+function fetchAPOD(date, shouldSave = false) {
+  const container = document.getElementById("current-image-container");
+  container.innerHTML = `<div class="loader">Fetching data from the cosmos...</div>`;
+
+  const url = `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&date=${date}`;
+
+  fetch(url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch data for the selected date.");
+      }
+      return response.json();
+    })
     .then(data => {
-      if (data && data[0].Status === "Success") {
-        document.getElementById('val-message').textContent = data[0].Message;
-        postOfficesData = data[0].PostOffice;
-        renderPostOffices(postOfficesData);
-      } else {
-        document.getElementById('val-message').textContent = "No post offices found.";
-        renderPostOffices([]);
+      renderAPOD(data);
+      if (shouldSave) {
+        saveSearch(date);
       }
     })
     .catch(error => {
-      console.error('Error fetching post offices:', error);
-      document.getElementById('val-message').textContent = "Error fetching post offices.";
+      console.error("Error:", error);
+      container.innerHTML = `<div class="error-msg">Whoops! ${error.message}</div>`;
     });
 }
 
-function renderPostOffices(offices) {
-  const grid = document.getElementById('post-office-grid');
-  grid.innerHTML = ''; // Clear previous
+function renderAPOD(data) {
+  const container = document.getElementById("current-image-container");
+  let mediaHtml = '';
 
-  offices.forEach(office => {
-    const card = document.createElement('div');
-    card.className = 'post-office-card';
+  if (data.media_type === "video") {
+    mediaHtml = `<iframe src="${data.url}" frameborder="0" allowfullscreen height="500" width="100%"></iframe>`;
+  } else {
+    mediaHtml = `<img src="${data.url}" alt="${data.title}">`;
+  }
 
-    card.innerHTML = `
-      <p><span class="label">Name</span> ${office.Name}</p>
-      <p><span class="label">Branch Type</span> ${office.BranchType}</p>
-      <p><span class="label">Delivery Status</span> ${office.DeliveryStatus}</p>
-      <p><span class="label">District</span> ${office.District}</p>
-      <p><span class="label">Division</span> ${office.Division}</p>
-    `;
+  container.innerHTML = `
+    <div class="apod-content">
+      <div class="apod-image-wrapper">
+        ${mediaHtml}
+      </div>
+      <div class="apod-details">
+        <h2>${data.title}</h2>
+        <p class="apod-date">${data.date}</p>
+        <p class="apod-explanation">${data.explanation}</p>
+      </div>
+    </div>
+  `;
+}
 
-    grid.appendChild(card);
+function saveSearch(date) {
+  let searches = JSON.parse(localStorage.getItem("searches")) || [];
+  
+  if (searches[searches.length - 1] !== date) {
+    searches.push(date);
+    localStorage.setItem("searches", JSON.stringify(searches));
+    addSearchToHistory();
+  }
+}
+
+function addSearchToHistory() {
+  const historyList = document.getElementById("search-history");
+  historyList.innerHTML = "";
+
+  const searches = JSON.parse(localStorage.getItem("searches")) || [];
+  
+  searches.forEach(date => {
+    const li = document.createElement("li");
+    li.textContent = date;
+    li.addEventListener("click", () => {
+      getImageOfTheDay(date);
+    });
+    historyList.appendChild(li);
   });
 }

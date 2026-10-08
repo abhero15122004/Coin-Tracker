@@ -3,99 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Information App</title>
+  <title>NASA Picture of the Day</title>
   <link rel="stylesheet" href="index.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- Landing Page -->
-  <div id="landing-page" class="view">
-    <div class="landing-left">
-      <div class="landing-content">
-        <h1>Post Office Application.</h1>
-        <p>This Application Allows you to extract information about the nearest Post Offices, based on your location.</p>
-        <div class="illustration-placeholder">
-          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="100" cy="100" r="80" fill="#5a5c88" opacity="0.8"/>
-            <!-- Simple placeholder shapes for illustration -->
-            <rect x="70" y="80" width="60" height="80" fill="#2d2d2d" rx="5"/>
-            <circle cx="100" cy="65" r="15" fill="#e0e0e0"/>
-          </svg>
-        </div>
+  <header class="navbar">
+    <div class="nav-content">
+      <div class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/></svg>
+        <h1>NASA APOD</h1>
       </div>
+      <form id="search-form" class="search-form">
+        <label for="search-input">Select Date:</label>
+        <input type="date" id="search-input" required>
+        <button type="submit">Search</button>
+      </form>
     </div>
-    <div class="landing-right">
-      <div class="landing-action">
-        <h2>Your Current IP Address is <span id="landing-ip">Loading...</span></h2>
-        <button id="get-started-btn" disabled>Get Started</button>
-      </div>
-    </div>
-  </div>
+  </header>
 
-  <!-- Dashboard -->
-  <div id="dashboard" class="view hidden">
-    
-    <!-- Top Details Section -->
-    <section class="details-section">
-      <h3>IP Address : <span id="dash-ip">...</span></h3>
-      <div class="details-grid">
-        <div class="detail-item">
-          <span class="label">Lat:</span>
-          <span class="value" id="val-lat">...</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">City:</span>
-          <span class="value" id="val-city">...</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">Organisation:</span>
-          <span class="value" id="val-org">...</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">Long:</span>
-          <span class="value" id="val-lon">...</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">Region:</span>
-          <span class="value" id="val-region">...</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">Hostname:</span>
-          <span class="value" id="val-host">...</span>
-        </div>
+  <main class="main-container">
+    <section class="content-wrapper">
+      <div id="current-image-container" class="image-card">
+        <div class="loader">Loading stellar content...</div>
+        <!-- APOD content gets injected here -->
       </div>
     </section>
 
-    <!-- Map Section -->
-    <section class="map-section">
-      <h2>Your Current Location</h2>
-      <iframe id="map-iframe" width="100%" height="400" frameborder="0" style="border:0" allowfullscreen></iframe>
-    </section>
-
-    <!-- More Info Section -->
-    <section class="more-info-section">
-      <h2>More Information About You</h2>
-      <p>Time Zone: <span id="val-timezone">...</span></p>
-      <p>Date And Time: <span id="val-datetime">...</span></p>
-      <p>Pincode: <span id="val-pincode">...</span></p>
-      <p>Message: <span id="val-message">...</span></p>
-    </section>
-
-    <!-- Post Offices Section -->
-    <section class="post-offices-section">
-      <h2>Post Offices Near You</h2>
-      <div class="search-container">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" placeholder="Search By Name...">
+    <aside class="history-sidebar">
+      <div class="history-card">
+        <h3>Search History</h3>
+        <p class="history-desc">Click a date to revisit your cosmic journey.</p>
+        <ul id="search-history">
+          <!-- History items will be injected here -->
+        </ul>
       </div>
-      
-      <div id="post-office-grid" class="post-office-grid">
-        <!-- Cards will be injected here by JS -->
-      </div>
-    </section>
-
-  </div>
+    </aside>
+  </main>
 
   <script src="script.js"></script>
 </body>
