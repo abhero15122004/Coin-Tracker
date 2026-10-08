@@ -1,98 +1,104 @@
-const API_KEY = "LCc8yC3V8qH2zpKDNlqx2G9jEKIw2kwPOhuNCX2a";
+let cryptoData = [];
+const apiEndpoint = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false";
 
 document.addEventListener("DOMContentLoaded", () => {
-  getCurrentImageOfTheDay();
-  addSearchToHistory();
+  // Using async/await as the primary fetch mechanism as requested by instructions (both are implemented).
+  fetchDataWithAsyncAwait();
+  // Alternatively, you can call fetchDataWithThen();
 
-  document.getElementById("search-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const dateInput = document.getElementById("search-input").value;
-    if (dateInput) {
-      getImageOfTheDay(dateInput);
-    }
+  // Search functionality
+  const searchInput = document.getElementById("search-input");
+  searchInput.addEventListener("input", (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const filteredData = cryptoData.filter(coin => 
+      coin.name.toLowerCase().includes(searchTerm) || 
+      coin.symbol.toLowerCase().includes(searchTerm)
+    );
+    renderTable(filteredData);
+  });
+
+  // Sort by Market Cap
+  const sortMktCapBtn = document.getElementById("sort-mkt-cap");
+  sortMktCapBtn.addEventListener("click", () => {
+    // Sorting in descending order as per typical market cap displays
+    const sortedData = [...cryptoData].sort((a, b) => b.market_cap - a.market_cap);
+    renderTable(sortedData);
+  });
+
+  // Sort by Percentage Change
+  const sortPercentageBtn = document.getElementById("sort-percentage");
+  sortPercentageBtn.addEventListener("click", () => {
+    // Sorting in descending order
+    const sortedData = [...cryptoData].sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h);
+    renderTable(sortedData);
   });
 });
 
-function getCurrentImageOfTheDay() {
-  const currentDate = new Date().toISOString().split("T")[0];
-  fetchAPOD(currentDate);
+// Part 1 & 5: Implementation of async await
+async function fetchDataWithAsyncAwait() {
+  try {
+    const response = await fetch(apiEndpoint);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    cryptoData = data;
+    renderTable(cryptoData);
+  } catch (error) {
+    console.error("Error fetching data using async/await:", error);
+  }
 }
 
-function getImageOfTheDay(date) {
-  fetchAPOD(date, true);
-}
-
-function fetchAPOD(date, shouldSave = false) {
-  const container = document.getElementById("current-image-container");
-  container.innerHTML = `<div class="loader">Fetching data from the cosmos...</div>`;
-
-  const url = `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&date=${date}`;
-
-  fetch(url)
+// Part 1 & 5: Implementation of .then
+function fetchDataWithThen() {
+  fetch(apiEndpoint)
     .then(response => {
       if (!response.ok) {
-        throw new Error("Failed to fetch data for the selected date.");
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       return response.json();
     })
     .then(data => {
-      renderAPOD(data);
-      if (shouldSave) {
-        saveSearch(date);
-      }
+      cryptoData = data;
+      renderTable(cryptoData);
     })
     .catch(error => {
-      console.error("Error:", error);
-      container.innerHTML = `<div class="error-msg">Whoops! ${error.message}</div>`;
+      console.error("Error fetching data using .then:", error);
     });
 }
 
-function renderAPOD(data) {
-  const container = document.getElementById("current-image-container");
-  let mediaHtml = '';
+// Part 3 & 4: Render Data
+function renderTable(data) {
+  const tableBody = document.getElementById("coin-table-body");
+  tableBody.innerHTML = "";
 
-  if (data.media_type === "video") {
-    mediaHtml = `<iframe src="${data.url}" frameborder="0" allowfullscreen height="500" width="100%"></iframe>`;
-  } else {
-    mediaHtml = `<img src="${data.url}" alt="${data.title}">`;
-  }
+  data.forEach(coin => {
+    const row = document.createElement("tr");
 
-  container.innerHTML = `
-    <div class="apod-content">
-      <div class="apod-image-wrapper">
-        ${mediaHtml}
-      </div>
-      <div class="apod-details">
-        <h2>${data.title}</h2>
-        <p class="apod-date">${data.date}</p>
-        <p class="apod-explanation">${data.explanation}</p>
-      </div>
-    </div>
-  `;
-}
+    // Format numbers
+    const currentPrice = `$${coin.current_price.toLocaleString()}`;
+    const totalVolume = `$${coin.total_volume.toLocaleString()}`;
+    const marketCap = `Mkt Cap : $${coin.market_cap.toLocaleString()}`;
+    
+    // Format percentage and determine color
+    const percentageChange = coin.price_change_percentage_24h.toFixed(2);
+    const percentageClass = percentageChange >= 0 ? "percentage-green" : "percentage-red";
+    const percentageText = `${percentageChange}%`;
 
-function saveSearch(date) {
-  let searches = JSON.parse(localStorage.getItem("searches")) || [];
-  
-  if (searches[searches.length - 1] !== date) {
-    searches.push(date);
-    localStorage.setItem("searches", JSON.stringify(searches));
-    addSearchToHistory();
-  }
-}
+    row.innerHTML = `
+      <td>
+        <div class="coin-info">
+          <img src="${coin.image}" alt="${coin.name}" class="coin-logo">
+          <span>${coin.name}</span>
+        </div>
+      </td>
+      <td class="coin-symbol">${coin.symbol}</td>
+      <td>${currentPrice}</td>
+      <td>${totalVolume}</td>
+      <td class="${percentageClass}">${percentageText}</td>
+      <td>${marketCap}</td>
+    `;
 
-function addSearchToHistory() {
-  const historyList = document.getElementById("search-history");
-  historyList.innerHTML = "";
-
-  const searches = JSON.parse(localStorage.getItem("searches")) || [];
-  
-  searches.forEach(date => {
-    const li = document.createElement("li");
-    li.textContent = date;
-    li.addEventListener("click", () => {
-      getImageOfTheDay(date);
-    });
-    historyList.appendChild(li);
+    tableBody.appendChild(row);
   });
 }
